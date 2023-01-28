@@ -22,17 +22,17 @@ public class DbConnection {
 	private static final int PORT = 3306;
 
 	public static Connection getConnection() {
-		String uri = String.format("jdbc: mysql://%s: %d/%s?user=%s&password=%s", HOST, PORT, SCHEMA, USER, PASSWORD);
+		String url = String.format("jdbc: mysql://%s: %d/%s?user=%s&password=%s", HOST, PORT, SCHEMA, USER, PASSWORD);
 		
 	
 		
 		try {
-			Connection conn = DriverManager.getConnection(uri);
+			Connection conn = DriverManager.getConnection(url);
 			System.out.println("Successfully obtained connection!");
 			return conn;
 		} catch (SQLException e) {
-			System.out.println("Error getting connection " + uri);
-			throw new DbException("Unable to get connection at \" + uri");
+			System.out.println("Error getting connection " + url);
+			throw new DbException("Unable to get connection at \" + url");
 		}
 	}
 }

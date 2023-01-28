@@ -2,9 +2,8 @@ package projects.service;
 
 import projects.dao.ProjectsDao;
 import java.util.List;
-import java.util.NoSuchElementException;
-
 import projects.entity.Project;
+import projects.exception.DbException;
 
 
 
@@ -35,8 +34,9 @@ public class ProjectService {
 	 */
 	
 	public Project fetchProjectById(Integer projectId) {
-		return projectDao.fetchProjectById(projectId).orElseThrow(() -> new NoSuchElementException(
-				"Project with project Id = " + projectId + "does not exist."));
+		return projectDao.fetchProjectById(projectId).orElseThrow(() -> new DbException 
+				("Project with project ID=" + projectId + " does not exist."));
+				//here this is if no project exists it will throw this DbException
 	}
 
 	public void createAndPopulateTables() {
@@ -44,7 +44,26 @@ public class ProjectService {
 		
 	}
 
+	public List<Project> fetchProjects() {
+		// TODO Auto-generated method stub
+		return projectDao.fetchAllProjects(); 
+	}
+
 	
-	
+
+public void modifyProjectDetails(Project project) {
+	if(!projectDao.modifyProjectDetails(project)) {
+		throw new DbException("Project with ID = " + project.getProjectId() + " does not exist.");
+	}
 	
 }
+public void deleteProject(Integer projectId) {
+	if(!projectDao.deleteProject(projectId)) {
+		throw new DbException("Recipe with ID = " + projectId + " does not exist.");
+	}
+	
+}
+}
+	
+	
+

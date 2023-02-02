@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
+import jdk.jfr.Category;
+import projects.entity.Material;
 import projects.entity.Project;
+import projects.entity.Step;
 import projects.exception.DbException;
 import projects.service.ProjectService;
 
@@ -28,7 +31,14 @@ public class ProjectsApp {
 	private List<String> operations = List.of(
 			"1) Create and populate all tables",
 			"2) Create project",
-			"3) List projects");
+			"3) List projects",
+			"4) Set Current Project",
+			"5) Find material to current project",
+			"6) Add step to Current Project",
+			"7) Add category to current Project",
+			"8) Modify step in current Project",
+			"9) Delete Project");
+	
 
 	// here formatter will be on
 	/**
@@ -67,6 +77,29 @@ public class ProjectsApp {
 				case 3:
 					listProjects();
 					break;
+				case 4: 
+					setCurrentProject();
+					break;
+					
+				case 5:
+					addMaterialToCurrentProject();
+					break;
+					
+				case 6: 
+					addStepToCurrentProject();
+					
+				case 7:
+					addCategoryToCurrentProject();
+					break;
+					
+				case 8:
+					modifyStepInCurrentProject();
+					break;
+					
+				case 9:
+					deleteProject();
+					break;
+					
 				}// here we will catch any type of exception
 			} catch (Exception e) {
 				System.out.println("\nError: " + e.toString() + "Try again");
@@ -74,7 +107,127 @@ public class ProjectsApp {
 		}
 
 	}
+	private void deleteProject() {
+	listProjects();
+	Integer projectId = getIntInput("Enter the ID of the project to delete");
 	
+	if (Objects.nonNull(projectId)) {
+		projectService.deleteProject(projectId);
+		
+		if(Objects.nonNull(projectId)&& curProject.getProjectId().equals(projectId)) {
+			curProject = null;
+		}
+	}
+	
+}
+	//method modifyStepInCurrentProject is our update step in CRUD
+	private void modifyStepInCurrentProject() {
+		if (Object.isNull(curProject)) {
+			System.out.println("\n Please select a project first");
+			return;
+		}
+	List<Step> steps = projectService.fetchSteps(curProject.getProjectId());
+	
+	System.out.println("\nSteps for current project");
+	steps.forEach(step -> System.out.println(" " + step));
+	
+	Integer stepId = getIntInput("Enter step ID of step to modify");
+	
+	if(Objects.nonNull(stepId)) {
+		String stepText = getStringInput("Enter new step text");
+		
+		if(Objects.nonNull(stepText)) {
+			Step step = new Step();
+			
+			step.setStepId(stepId);
+			step.setStepText(stepText);
+			
+			projectService.modifyStep(step);
+			cuProject = projectService.fetchProjectById(curProject.getProjectId()); 
+		}
+	}
+}
+	private void addCategoryToCurrentProject() {
+		if (Object.isNull(curProject)) {
+			System.out.println("\n Please select a project first");
+			return;
+		}
+		List<Category> categories = projectService.fetchCategories();
+		
+		categories.forEach(
+				category -> System.out.println(" " + category.getCategoryName()));
+	String category = getStringInput ("Enter the category to add "); 
+	
+	if (Objects.nonNull(category)) {
+		projectService.addCategoryToProject(curProject.getProjectId(), category);
+		curProject = projectService.fetchProjectById(curProject.getProjectId());
+	}
+}
+	private void setCurrentProject() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	
+	private void addStepToCurrentProject() {
+		if (Object.isNull(curProject)) {
+			System.out.println("\n Please select a project first");
+			return;
+		}
+		
+		String stepText = getStringInput ("Enter the step text");
+		
+		if(Objects.nonNull(stepText)) {
+			Step step = new Step();
+			
+			step.setProjectId(curProject.getProjectId());
+			step.setStepText(stepText);
+			
+			projectService.addStep(step);
+			curProject = projectService.fetchProjectById(step.getProjectId());
+		}
+	
+}
+
+	private void addMaterialToCurrentProject() {
+	if (Object.isNull(curProject)) {
+		System.out.println("\n Please select a project first");
+		return;
+	}
+	String name = getStringInput (" Enter material name");
+	String insturction = getStringInput("Enter an instruciton if any ");
+	Double  inputAmount = getDoubleInput (" Enter the material amount needed");
+	List<Unit> units = projectService.fetchUnits();
+	
+	BigDecimal amount = Objects.isNull(inputAmount) ? null : new BigDecimal(inputAmount).setScale(2);
+	
+	System.out.println("units:");
+	
+	units.forEach(unit -> System.out.println(" " + unit.getUnitId() + " : " + unit.getUnitNameSingular() + "(" + unit.getNamePlural() + ")"));
+	
+	Integer unitId = getIntInput ("Enter a unit ID (press enter for none)");
+	
+	Unit unit = new Unit();
+	unit.setUnitId(unitId);
+	
+	Material material = new Material();
+	
+	material.setProjectId(curProject.getProjectId());
+	material.setUnit(unit);
+	material.setMaterialName(name);
+	material.setInstructin(instruction);
+	material.setAmount(amount);
+	
+	projectService.addMaterial(material);
+	curProject = projectService.fetchProjectById(material.getProjectId());
+	
+	
+}
+	private Double getDoubleInput(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	private void listProjects() {
 		List<Project> projects = projectService.fetchProjects();
 		System.out.println("\nprojects:");
@@ -272,5 +425,7 @@ public class ProjectsApp {
 			this.scanner = scanner;
 		}
 	}
+	
+	
 
 }

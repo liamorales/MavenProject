@@ -283,7 +283,7 @@ public class ProjectsDao extends DaoBase {
 	
 
 
-	/*public void addStepToProject(Step step) {
+	public void addStepToProject(Step step) {
 		String sql =
 				"INSERT INTO " + STEP_TABLE + "(project_id, step_order, step_text)"
 				+ "VALES (?, ?, ?)";
@@ -311,7 +311,7 @@ public class ProjectsDao extends DaoBase {
 	} 
 	}
 
- 	public List<jdk.jfr.Category> fetchAllCategories() {
+ 	public List<Category> fetchAllCategories() {
 		String sql = "SELECT * FROM " + CATEGORY_TABLE + "ORDER BY category_name";
 		
 		try(Connection conn = DbConnection.getConnection()){
@@ -386,5 +386,5 @@ public class ProjectsDao extends DaoBase {
 		}catch (SQLException e) {
 			throw new DbException(e);
 		}
-	}*/
+	}
 }

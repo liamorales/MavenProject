@@ -202,6 +202,7 @@ public class ProjectsApp {
 		
 		projects.forEach(project -> System.out
 				.println("  " + project.getProjectId() + " : " + project.getProjectName()));
+		//This method will list our menu options our for the user
 }
 	
 	private BigDecimal getDecimalInput(String prompt) {

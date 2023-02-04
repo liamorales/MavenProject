@@ -12,9 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Collection;
-import jdk.jfr.Category;
-
+import projects.entity.Category;
 import projects.entity.Material;
 import projects.entity.Project;
 import projects.entity.Step;
@@ -32,12 +30,9 @@ import provided.util.DaoBase;
 public class ProjectsDao extends DaoBase {
 	
 	private static final String CATEGORY_TABLE = "category";
-	@SuppressWarnings("unused")
 	private static final String MATERIAL_TALBE = "material";
 	private static final String PROJECT_TABLE = "project";
-	@SuppressWarnings("unused")
 	private static final String PROJECT_CATEGORY_TABLE = "project_category";
-	@SuppressWarnings("unused")
 	private static final String STEP_TABLE = "step";
 
 	//these abouve all have the auto_increment keyword so MySQL will automatically increment the value
@@ -162,20 +157,20 @@ public class ProjectsDao extends DaoBase {
 	}
 	
 	private List<Category> fetchCategoriesForProject(Connection conn, Integer projectId) 
-			throws SQLException{
-		//here formatter is off @formatter: off
+			throws SQLException {
+		// @formatter:off
 		String sql = ""
 				+ "SELECT c.* FROM " + CATEGORY_TABLE + " c "
 				+ "JOIN " + PROJECT_CATEGORY_TABLE + " pc USING (category_id) "
 				+ "WHERE project_id = ?";
-		//@formatter:on is on 
+		//@formatter:on  
 		
-		try(PreparedStatement stmt = conn.prepareStatement(sql)){
+		try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 			setParameter(stmt, 1, projectId, Integer.class);
 			/*We use preparedStatement to declare parameters for the user input to help
 			prevent a SQL injection*/
 			
-			try (ResultSet rs = stmt.executeQuery()){
+			try (ResultSet rs = stmt.executeQuery()) {
 				List<Category> categories = new LinkedList<>();
 				
 				while(rs.next()) {

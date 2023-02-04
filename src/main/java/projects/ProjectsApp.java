@@ -16,6 +16,11 @@ import projects.service.ProjectService;
  * @author liamorales
  *
  */
+/* We begin by sorting out application by libraries and packages. This will satisfy user input and output
+*concerns and business rules and for proper data acquisition and persistence. 
+*this file is our input/outpt layer and will interact with the user
+*This Layer will gether information from the User, handles exceptions, processes menu operatons and interacts with 
+*the service layer*/
 public class ProjectsApp {
 
 	// going to place the scanner that represents the console input
@@ -105,7 +110,7 @@ public class ProjectsApp {
 				curProject = null;
 			}
 		}
-		
+		/*The deleteProject method is the last step in our CRUD application. It is the delete step*/
 	}
 	private void updateProjectDetails() {
 		
@@ -141,7 +146,8 @@ public class ProjectsApp {
 	projectService.modifyProjectDetails(project);
 	
 	curProject = projectService.fetchProjectById(curProject.getProjectId());
-	
+	/*The updateProjectDetails method is our update step in the CRUD application. We can take not of how this is that 
+	 * step because we are using SQL keywords such as update table set in these methods.*/
 }
 	private void selectProject() {
 		listProjects();
@@ -153,7 +159,8 @@ public class ProjectsApp {
 	
 	 //This will throw an exception if an invalid project Id is entered 
 	curProject = projectService.fetchProjectById(projectId);
-		
+	/*The selectProject method is the read step in our CRUD application. We can observe this from using
+	 * SQL keywords such as SELECT *FRom table in its methods*/
 	}
 	private void createProject() {
 		String projectName= getStringInput("Enter new project name");
@@ -172,7 +179,8 @@ public class ProjectsApp {
 		
 		Project dbProject = projectService.addProject(project);
 		System.out.println("you have successfully created a project" + dbProject);
-	
+		/*The createProject method is the first step in our CRUD application. We can determine it is the first step because
+		 * SQL keywords such as INSERT into table are used in its methods*/
 }
 	private boolean exitMenu() {
 		System.out.println("Exiting selection, bye!");

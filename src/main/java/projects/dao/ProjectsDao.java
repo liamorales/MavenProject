@@ -24,10 +24,11 @@ import provided.util.DaoBase;
  * @author liamorales
  *
  */
-// This layer will read write data to tables 
-// will not create exceptions, and data is generally not transformed, 
-// here data is put into DAO classes that model the tables, then it will return multiple rows, (fetchAll)
-// or can return single rows (fetchByld)
+/* This layer will read/write data to tables 
+ will not create exceptions, and data is generally not transformed, 
+ here data is put into DAO classes that model the tables, then it will return multiple rows, (fetchAll)
+ or can return single rows (fetchByld) this layer will also accept and display data and handle exceptions
+ Data is put into DAO classes that will model the tables and then will return multiple rows*/
 public class ProjectsDao extends DaoBase {
 	
 	private static final String CATEGORY_TABLE = "category";
@@ -39,16 +40,18 @@ public class ProjectsDao extends DaoBase {
 	@SuppressWarnings("unused")
 	private static final String STEP_TABLE = "step";
 
+	//these abouve all have the auto_increment keyword so MySQL will automatically increment the value
+
 	
 	public Project insertProject(Project project) {
 		// here we will have the formatter off @formatter : off
-		String sql = "" + "INSERT INTO " + PROJECT_TABLE + " "
+		String sql = "" + "INSERT INTO " + PROJECT_TABLE + " " //here this is jbdc format 
 				+ "(project_name, estimated_hours, actual_hours, difficulty, notes)" 
 				+ "VALUES" 
 				+ "(?, ?, ?, ?, ?)";
 		// HERE WILL WILL TURN FORMATTER BACK ON @formatter: on
 
-		try (Connection conn = DbConnection.getConnection()) {
+		try (Connection conn = DbConnection.getConnection()) {//this will find and load driver
 			startTransaction(conn); // inDAOBase
 
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -58,7 +61,7 @@ public class ProjectsDao extends DaoBase {
 				setParameter(stmt, 4, project.getDifficulty(), Integer.class);
 				setParameter(stmt, 5, project.getNotes(), String.class);
 
-				stmt.executeUpdate();
+				stmt.executeUpdate();// this sends request to MySqL
 				// method from DAOBase, and if we haven't had any exceptions, here we commit.
 
 				Integer projectId = getLastInsertId(conn, PROJECT_TABLE);
@@ -82,7 +85,10 @@ public class ProjectsDao extends DaoBase {
 		String sql = "SELECT * FROM" + PROJECT_TABLE + " ORDER BY project_name ";
 		
 		try (Connection conn = DbConnection.getConnection()) {
-			startTransaction(conn);
+			startTransaction(conn); //The transactions contain one or more SQL statement
+	/*This is important because either all the statements will succeed or all of them will fail
+	 * When they all succeed, the transaction is commited, but if it fails the transaction is rolled back*/	
+
 
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 				try (ResultSet rs = stmt.executeQuery()) {
@@ -100,10 +106,11 @@ public class ProjectsDao extends DaoBase {
 			}
 
 			catch (Exception e) {
-				rollbackTransaction(conn);
+				rollbackTransaction(conn);//This is here so that if our transaction fails, it will roll back
 				throw new DbException(e);
 			}
-		}
+		}//this is important becuase once our transaction is commited and the data base says it succeeded
+		//then it is now permanetly in the system
 
 		catch (SQLException e) {
 			throw new DbException(e);
@@ -114,8 +121,8 @@ public class ProjectsDao extends DaoBase {
 		String sql = "SELECT * FROM " + PROJECT_TABLE + "WHERE project_id = ? ";
 		
 		try(Connection conn = DbConnection.getConnection()){
-			startTransaction(conn);
-			
+			startTransaction(conn); //here we will begin our transaction to MySQL
+			/*We set up our statements as such so that we can control or transactions. Bellow are examples*/
 			try {
 				Project project = null;
 			
@@ -125,7 +132,7 @@ public class ProjectsDao extends DaoBase {
 				
 				try (ResultSet rs = stmt.executeQuery()){
 					if (rs.next()) {
-					
+					//here we are sending "commit" to MySQL
 						project = (extract(rs, Project.class));
 					}
 				}
@@ -138,7 +145,7 @@ public class ProjectsDao extends DaoBase {
 				
 				project.getCategories().addAll(fetchCategoriesForProject(conn, projectId));
 			}
-			
+			//The above statements are the DAO returning multiple rows
 			commitTransaction(conn);
 			return Optional.ofNullable(project);
 			}
@@ -156,20 +163,22 @@ public class ProjectsDao extends DaoBase {
 	
 	private List<Category> fetchCategoriesForProject(Connection conn, Integer projectId) 
 			throws SQLException{
-		//here formatter is off formatter: off
+		//here formatter is off @formatter: off
 		String sql = ""
 				+ "SELECT c.* FROM " + CATEGORY_TABLE + " c "
-				+ "JOIN " + PROJECT_CATEGORY_TABLE + "pc USING (category_id)"
-				+ "WHERE project_id = ? ";
-		//formatter:on is on 
+				+ "JOIN " + PROJECT_CATEGORY_TABLE + " pc USING (category_id) "
+				+ "WHERE project_id = ?";
+		//@formatter:on is on 
 		
-		try (PreparedStatement stmt = conn.prepareStatement(sql)){
+		try(PreparedStatement stmt = conn.prepareStatement(sql)){
 			setParameter(stmt, 1, projectId, Integer.class);
+			/*We use preparedStatement to declare parameters for the user input to help
+			prevent a SQL injection*/
 			
 			try (ResultSet rs = stmt.executeQuery()){
-				List<Category> categories = new LinkedList<Category>();
+				List<Category> categories = new LinkedList<>();
 				
-				while (rs.next()) {
+				while(rs.next()) {
 					categories.add(extract(rs, Category.class));
 				}
 				return categories;

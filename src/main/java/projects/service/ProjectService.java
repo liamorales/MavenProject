@@ -9,8 +9,10 @@ import projects.exception.DbException;
 
 public class ProjectService {
 
-	//this application is what mostly acts as a pass-through, between the 
-	//main application file that runs and the DAO file data layer
+	/*this application is what mostly acts as a pass-through, between the 
+	main application file that runs and the DAO file data layer, because it's the service layer
+	it will maintain business rules. project.entity will also be included in our service layer
+	This layer will also validate data, and will throw appropriate excetpions*/
 	
 	
 	private ProjectsDao projectDao = new ProjectsDao();
@@ -40,10 +42,11 @@ public class ProjectService {
 	}
 
 	
-
+/*If there is no need for the null check the list will never be null, if theere are no rows, the list will be empty
+ * We don't need to have a null check here because the list will never be null*/
 
 public void modifyProjectDetails(Project project) {
-	if(!projectDao.modifyProjectDetails(project)) {
+	if(!projectDao.modifyProjectDetails(project)) { 
 		throw new DbException("Project with ID = " + project.getProjectId() + " does not exist.");
 	}
 	

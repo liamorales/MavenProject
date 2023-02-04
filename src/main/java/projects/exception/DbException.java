@@ -13,9 +13,6 @@ public class DbException extends RuntimeException {
 	/**
 	 * 
 	 */
-	public DbException() {
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @param message

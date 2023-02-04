@@ -1,13 +1,8 @@
 package projects.service;
 
-import projects.Unit;
 import projects.dao.ProjectsDao;
 import java.util.List;
-
-import jdk.jfr.Category;
-import projects.entity.Material;
 import projects.entity.Project;
-import projects.entity.Step;
 import projects.exception.DbException;
 
 
@@ -44,17 +39,8 @@ public class ProjectService {
 				//here this is if no project exists it will throw this DbException
 	}
 
-	public void createAndPopulateTables() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public List<Project> fetchProjects() {
-		// TODO Auto-generated method stub
-		return projectDao.fetchAllProjects(); 
-	}
-
 	
+
 
 public void modifyProjectDetails(Project project) {
 	if(!projectDao.modifyProjectDetails(project)) {
@@ -69,36 +55,9 @@ public void deleteProject(Integer projectId) {
 	
 }
 
-public List<Unit>fetchUnits(){
-	return projectDao.fetchAllUnits();
-}
 
-public void addMaterial(Material material) {
-	projectDao.addMaterialToProject(material);
-}
 
-public void addStep(Step step) {
-	projectDao.addStepToProject(step);
-}
 
-public List<Category> fetchCategories() {
-	return projectDao.fetchAllCategories();
-}
-
-public void addCategoryToProject (Integer projectId, String category) {
-	projectDao.addCategoryToProject(projectId, category);
-}
-public List<Step> fetchSteps(Integer projectId){
-	return projectDao.fetchProjectSteps(projectId);
-}
-
-public void modifyStep(Step step) {
-	if(!projectDao.modifyProejctStep(step)) {
-		throw new DbException(
-				"Step with ID=" + step.getStepId() + "does not exist.");
-	}
-	
-}
 }
 	
 	
